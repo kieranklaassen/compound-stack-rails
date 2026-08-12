@@ -2,11 +2,16 @@
 
 # Base controller for every Inertia-rendered page. Controllers inherit from this
 # (never ApplicationController directly), so each new page automatically receives
-# the shared props defined here — a page cannot ship ungated by omission.
+# the shared props defined here AND the authentication gate — a page cannot ship
+# ungated, or without shared context, by omission.
 #
-# Later modules extend the shared surface: U4 (auth) adds the authentication gate,
-# U10 (riffrec) adds the feedback-capture props.
+# To make a page public, call `allow_unauthenticated_access` (see HomeController,
+# SessionsController).
 class InertiaController < ApplicationController
+  # Authentication gate, default-on. `before_action :require_authentication` runs
+  # for every subclass unless it opts out with `allow_unauthenticated_access`.
+  include Authentication
+
   # Flash messages, surfaced to every page as a plain hash keyed by type.
   inertia_share flash: -> { flash.to_hash }
 
