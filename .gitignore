@@ -41,7 +41,5 @@
 
 # Node modules and Vite build output (frontend is built by Vite, not committed).
 /node_modules
-/public/vite
-/public/vite-dev
-/public/vite-test
+/public/vite*
 *.local
