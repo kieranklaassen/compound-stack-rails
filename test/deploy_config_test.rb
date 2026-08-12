@@ -15,7 +15,7 @@ class DeployConfigTest < ActiveSupport::TestCase
     "KAMAL_REGISTRY_USERNAME" => "example-user",
     "KAMAL_STORAGE_VOLUME" => "compound_stack_storage",
     "KAMAL_BUILDER_ARCH" => "amd64",
-    "KAMAL_SSH_USER" => "deploy",
+    "KAMAL_SSH_USER" => "deploy"
   }.freeze
 
   def render_deploy(env)

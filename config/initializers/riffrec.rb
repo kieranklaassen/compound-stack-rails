@@ -22,7 +22,7 @@ module Riffrec
 
     {
       endpoint: ENV["RIFFREC_ENDPOINT"],
-      public_key: ENV["RIFFREC_API_KEY"],
+      public_key: ENV["RIFFREC_API_KEY"]
     }
   end
 end
