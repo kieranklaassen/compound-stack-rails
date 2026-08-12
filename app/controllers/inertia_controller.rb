@@ -17,4 +17,10 @@ class InertiaController < ApplicationController
 
   # Active locale, so pages can render language-aware copy without a round trip.
   inertia_share locale: -> { I18n.locale.to_s }
+
+  # Riffrec feedback capture: a boolean gate + the browser-safe config (nil when
+  # unconfigured). RiffrecProvider on the client mounts the widget only when
+  # enabled. No secret is ever shared — see config/initializers/riffrec.rb.
+  inertia_share feedback_capture_enabled: -> { Riffrec.configured? }
+  inertia_share riffrec: -> { Riffrec.client_config }
 end

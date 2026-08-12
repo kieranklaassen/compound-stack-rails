@@ -1,6 +1,7 @@
 import { createInertiaApp } from '@inertiajs/react'
 import { StrictMode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
+import RiffrecProvider, { type RiffrecConfig } from '../lib/riffrec_provider'
 
 void createInertiaApp({
   // Resolve page components from app/frontend/pages using the snake_case
@@ -24,9 +25,21 @@ void createInertiaApp({
   setup({ el, App, props }) {
     if (!el) return
 
+    // Feedback-capture config is a static server setting, read once from the
+    // initial page's shared props (not usePage, so this wrapper sits above App).
+    const shared = props.initialPage.props as {
+      feedback_capture_enabled?: boolean
+      riffrec?: RiffrecConfig | null
+    }
+
     const app = (
       <StrictMode>
-        <App {...props} />
+        <RiffrecProvider
+          enabled={Boolean(shared.feedback_capture_enabled)}
+          config={shared.riffrec ?? null}
+        >
+          <App {...props} />
+        </RiffrecProvider>
       </StrictMode>
     )
 
