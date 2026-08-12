@@ -1,8 +1,24 @@
-# Compound Stack Rails
+# README
 
-Starter template for new Rails projects: Rails + Inertia (React) + Kamal plus
-the house libraries and conventions used across Kieran's Rails apps. Update the
-template once, delegate to downstream projects, and they pick up the changes.
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-Status: seed. Pattern research from existing Rails projects lands in
-`docs/patterns/` before the template itself is generated.
+Things you may want to cover:
+
+* Ruby version
+
+* System dependencies
+
+* Configuration
+
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
