@@ -1,119 +1,81 @@
-# Name of your application. Used to uniquely configure containers.
-service: compound_stack_rails
+# Kamal deploy config — fully env-driven.
+#
+# Every TENANT-SPECIFIC value comes from ENV.fetch with NO default, so a missing
+# variable fails the render LOUDLY instead of silently reusing another tenant's
+# service name, host, or volume (the only shape proven to prevent a shared-host
+# config leak). Source these from .kamal/deploy.env before running kamal — see
+# DEPLOYING.md.
 
-# Name of the container image (use your-user/app-name on external registries).
-image: compound_stack_rails
+# Refuse to run against an older Kamal than the fleet standard.
+minimum_version: 2.12.0
+
+# Name of your application. Used to uniquely configure containers.
+service: <%= ENV.fetch("KAMAL_SERVICE") %>
+
+# Name of the container image (e.g. ghcr.io-user/app-name).
+image: <%= ENV.fetch("KAMAL_IMAGE") %>
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - <%= ENV.fetch("KAMAL_WEB_HOST") %>
+  # Scale job processing onto a dedicated machine by uncommenting this role and
+  # dropping SOLID_QUEUE_IN_PUMA below:
   # job:
   #   hosts:
-  #     - 192.168.0.1
+  #     - <%= ENV.fetch("KAMAL_JOB_HOST", "unset") %>
   #   cmd: bin/jobs
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-#
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-#
-# proxy:
-#   ssl: true
-#   host: app.example.com
+# Terminate SSL at kamal-proxy with an automatic Let's Encrypt certificate.
+# Requires config.assume_ssl + config.force_ssl in production.rb (Rails default).
+proxy:
+  ssl: true
+  host: <%= ENV.fetch("KAMAL_PROXY_HOST") %>
+  healthcheck:
+    path: /up
 
-# Where you keep your container images.
+# Where you keep your container images. Registry server defaults to ghcr.io;
+# username is tenant-specific and required.
 registry:
-  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
-
-  # Needed for authenticated registries.
-  # username: your-user
-
-  # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  server: <%= ENV.fetch("KAMAL_REGISTRY_SERVER", "ghcr.io") %>
+  username: <%= ENV.fetch("KAMAL_REGISTRY_USERNAME") %>
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - RIFFREC_API_KEY
   clear:
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    # Run Solid Queue inside Puma (single web role default). Split to a job role
+    # for scale — see the commented job role above.
     SOLID_QUEUE_IN_PUMA: true
+    # One Puma worker: SQLite is single-writer, so more workers contend, they do not scale.
+    WEB_CONCURRENCY: "1"
+    # Riffrec endpoint (public, non-secret). Empty by default → feedback capture no-ops.
+    RIFFREC_ENDPOINT: "<%= ENV.fetch("RIFFREC_ENDPOINT", "") %>"
 
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
-
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use compound_stack_rails-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
-
-    # Log everything from Rails
-    # RAILS_LOG_LEVEL: debug
-
-# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
-# "bin/kamal logs -r job" will tail logs from the first server in the job section.
+# Aliases are triggered with "bin/kamal <alias>".
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
-  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
-# Recommended to change this to a mounted volume path that is backed up off server.
+# Persistent volume for the SQLite databases and local Active Storage files.
+# Recommended to back this path up off-server.
 volumes:
-  - "compound_stack_rails_storage:/rails/storage"
+  - "<%= ENV.fetch("KAMAL_STORAGE_VOLUME") %>:/rails/storage"
 
-# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
-# hitting 404 on in-flight requests. Combines all files from new and old
-# version inside the asset_path.
-asset_path: /rails/public/assets
+# Bridge fingerprinted Vite assets between versions to avoid 404s on in-flight
+# requests. Vite builds into public/vite (not public/assets).
+asset_path: /rails/public/vite
 
-# Configure the image builder.
+# Configure the image builder. arch is tenant/host-specific and required.
 builder:
-  arch: amd64
+  arch: <%= ENV.fetch("KAMAL_BUILDER_ARCH") %>
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: 3.4.2
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
-
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+# SSH user for the target hosts. Required — no root default.
+ssh:
+  user: <%= ENV.fetch("KAMAL_SSH_USER") %>

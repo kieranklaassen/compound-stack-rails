@@ -11,6 +11,9 @@
 /.env*
 !/.env.example
 
+# Kamal per-checkout deploy environment (tenant values; never committed).
+/.kamal/deploy.env
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
