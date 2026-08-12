@@ -38,6 +38,9 @@ gem "image_processing", "~> 1.2"
 # Inertia.js adapter for Rails — server-driven SPA without a parallel JSON API
 gem "inertia_rails"
 
+# First-class LLM access (OpenAI / Anthropic / Gemini) with a unified API.
+gem "ruby_llm", "~> 1.16"
+
 # Vite integration for the app/frontend build pipeline
 gem "vite_rails"
 
