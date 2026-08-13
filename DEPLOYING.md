@@ -12,7 +12,7 @@ silently reusing another app's config.
    ```sh
    # Required — the render fails loudly if any of these is unset.
    export KAMAL_SERVICE=my-app
-   export KAMAL_IMAGE=ghcr.io/me/my-app
+   export KAMAL_IMAGE=me/my-app   # WITHOUT the registry host — registry.server (ghcr.io) is prepended
    export KAMAL_WEB_HOST=203.0.113.10
    export KAMAL_PROXY_HOST=my-app.example.com
    export KAMAL_REGISTRY_USERNAME=me
@@ -26,6 +26,15 @@ silently reusing another app's config.
    ```
 
 2. Ensure `config/master.key` exists locally (untracked — see `.gitignore`).
+   A fresh clone CANNOT decrypt the template's `config/credentials.yml.enc` —
+   regenerate the pair for your tenant:
+
+   ```sh
+   rm config/credentials.yml.enc
+   EDITOR=true bin/rails credentials:edit   # writes a new .enc + master.key
+   ```
+
+   Commit the new `credentials.yml.enc`; the key stays untracked.
 
 ## Deploy
 

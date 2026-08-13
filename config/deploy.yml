@@ -73,8 +73,13 @@ volumes:
 asset_path: /rails/public/vite
 
 # Configure the image builder. arch is tenant/host-specific and required.
+# Optionally build on a remote docker host (e.g. the target box itself) to
+# avoid cross-arch emulation: KAMAL_BUILDER_REMOTE=ssh://user@host.
 builder:
   arch: <%= ENV.fetch("KAMAL_BUILDER_ARCH") %>
+<% unless ENV["KAMAL_BUILDER_REMOTE"].to_s.empty? %>
+  remote: <%= ENV["KAMAL_BUILDER_REMOTE"] %>
+<% end %>
 
 # SSH user for the target hosts. Required — no root default.
 ssh:

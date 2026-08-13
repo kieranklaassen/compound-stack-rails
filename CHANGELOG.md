@@ -5,6 +5,12 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.2.3
+
+- **0.2.3-001** · _fix_ · deploy, frontend — [Deploy hardening from the first tenant](docs/changelog/0.2.3-001-deploy-hardening-from-first-tenant.md).
+  Dockerfile ships .ruby-version + Node for the Vite build; optional remote
+  builder; KAMAL_IMAGE and fresh-clone credentials documented.
+
 ## 0.2.2
 
 - **0.2.2-001** · _feat_ · frontend — [Cloudflare tunnel previews](docs/changelog/0.2.2-001-cloudflared-tunnel-previews.md).
