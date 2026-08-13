@@ -43,10 +43,13 @@ class ChangelogTest < ActiveSupport::TestCase
     end
   end
 
-  test "the seed entry exists and matches the manifest template_version" do
+  test "the seed entry exists and the manifest matches the newest entry version" do
     seed = CHANGELOG_DIR.join("0.1.0-001-initial-template.md")
     assert File.exist?(seed), "the 0.1.0 seed entry must exist"
-    assert_equal MANIFEST.fetch("template_version"), frontmatter(seed)["template_version"]
+
+    newest = ENTRIES.map { |p| Gem::Version.new(frontmatter(p)["template_version"]) }.max
+    assert_equal Gem::Version.new(MANIFEST.fetch("template_version")), newest,
+      "manifest template_version must equal the newest changelog entry version"
   end
 
   test "the changelog README documents the filter + apply algorithm" do

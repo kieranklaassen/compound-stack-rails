@@ -5,6 +5,12 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.2.0
+
+- **0.2.0-001** · _feat_ · ruby_native — [Add Ruby Native module](docs/changelog/0.2.0-001-add-ruby-native-module.md).
+  Registers rubynative.com as a house module for native iOS/Android distribution;
+  documentation-first, no gem or license in the template.
+
 ## 0.1.0
 
 - **0.1.0-001** · _feat_ · all modules — [Initial template](docs/changelog/0.1.0-001-initial-template.md).
