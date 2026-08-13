@@ -8,7 +8,7 @@
 # to the modules listed here, applies them in order, and bumps template_version.
 # See docs/changelog/README.md and docs/template-manifest.md.
 
-template_version: "0.2.1"
+template_version: "0.2.2"
 
 # module name -> the template_version at which this app adopted it.
 modules:

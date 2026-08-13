@@ -5,6 +5,12 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.2.2
+
+- **0.2.2-001** · _feat_ · frontend — [Cloudflare tunnel previews](docs/changelog/0.2.2-001-cloudflared-tunnel-previews.md).
+  Adds `bin/tunnel` (cloudflared quick tunnel over Rails-served built assets) and
+  allows `*.trycloudflare.com` in development host authorization.
+
 ## 0.2.1
 
 - **0.2.1-001** · _fix_ · auth, deploy — [Enforce production SSL](docs/changelog/0.2.1-001-enforce-production-ssl.md).
