@@ -10,8 +10,8 @@ class RiffrecShareTest < ActionDispatch::IntegrationTest
   end
 
   test "unconfigured: capture is disabled and no riffrec config is shared" do
-    with_env("RIFFREC_API_KEY" => nil, "RIFFREC_ENDPOINT" => nil) do
-      ENV.delete("RIFFREC_API_KEY")
+    with_env("RIFFREC_PUBLIC_KEY" => nil, "RIFFREC_ENDPOINT" => nil) do
+      ENV.delete("RIFFREC_PUBLIC_KEY")
       ENV.delete("RIFFREC_ENDPOINT")
       get root_path
 
@@ -21,7 +21,7 @@ class RiffrecShareTest < ActionDispatch::IntegrationTest
   end
 
   test "configured: shares the gate and a browser-safe config with no secret field" do
-    with_env("RIFFREC_API_KEY" => "pk_placeholder", "RIFFREC_ENDPOINT" => "https://riffrec.example.test") do
+    with_env("RIFFREC_PUBLIC_KEY" => "pk_placeholder", "RIFFREC_ENDPOINT" => "https://riffrec.example.test") do
       get root_path
 
       assert_inertia_props({ feedback_capture_enabled: true })

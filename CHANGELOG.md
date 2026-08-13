@@ -5,6 +5,14 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.2.1
+
+- **0.2.1-001** · _fix_ · auth, deploy — [Enforce production SSL](docs/changelog/0.2.1-001-enforce-production-ssl.md).
+  Re-enables assume_ssl/force_ssl so session cookies ship Secure with HSTS.
+- **0.2.1-002** · _fix_ · riffrec — [Rename capture key to RIFFREC_PUBLIC_KEY](docs/changelog/0.2.1-002-riffrec-public-key-rename.md).
+  Browser-shipped key moves from env.secret to env.clear; no secret-shaped naming.
+- **0.2.1-003** · _fix_ · auth, agent-conventions — [Sign-in submit test + AGENTS.md module list](docs/changelog/0.2.1-003-signin-submit-test-and-agents-module-list.md).
+
 ## 0.2.0
 
 - **0.2.0-001** · _feat_ · ruby_native — [Add Ruby Native module](docs/changelog/0.2.0-001-add-ruby-native-module.md).

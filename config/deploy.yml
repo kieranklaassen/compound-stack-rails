@@ -46,7 +46,6 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
-    - RIFFREC_API_KEY
   clear:
     # Run Solid Queue inside Puma (single web role default). Split to a job role
     # for scale — see the commented job role above.
@@ -55,6 +54,7 @@ env:
     WEB_CONCURRENCY: "1"
     # Riffrec endpoint (public, non-secret). Empty by default → feedback capture no-ops.
     RIFFREC_ENDPOINT: "<%= ENV.fetch("RIFFREC_ENDPOINT", "") %>"
+    RIFFREC_PUBLIC_KEY: "<%= ENV.fetch("RIFFREC_PUBLIC_KEY", "") %>"
 
 # Aliases are triggered with "bin/kamal <alias>".
 aliases:

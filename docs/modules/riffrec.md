@@ -8,7 +8,7 @@ env vars.
 ## What this module is
 
 - `config/initializers/riffrec.rb` defines `Riffrec.configured?` (true only when
-  BOTH `RIFFREC_API_KEY` and `RIFFREC_ENDPOINT` are set) and `Riffrec.client_config`
+  BOTH `RIFFREC_PUBLIC_KEY` and `RIFFREC_ENDPOINT` are set) and `Riffrec.client_config`
   (the endpoint + the browser-publishable capture key — never a server secret).
 - `InertiaController` shares `feedback_capture_enabled` (the boolean gate) and
   `riffrec` (the client config, `nil` when unconfigured) with every page.
@@ -31,7 +31,7 @@ return unmount
 
 ## Invariant: no secrets, no live endpoints
 
-`.env.example` carries `RIFFREC_API_KEY=` and `RIFFREC_ENDPOINT=` as **names
+`.env.example` carries `RIFFREC_PUBLIC_KEY=` and `RIFFREC_ENDPOINT=` as **names
 only**. No real key or live hostname appears anywhere in the repo. `client_config`
 exposes only the endpoint and a publishable key — never a server secret. Enforced
 by `test/controllers/riffrec_share_test.rb`.
@@ -42,7 +42,7 @@ by `test/controllers/riffrec_share_test.rb`.
 - `app/controllers/inertia_controller.rb` (the two shared props)
 - `app/frontend/lib/riffrec_provider.tsx`, `app/frontend/lib/riffrec_provider.test.tsx`
 - `app/frontend/entrypoints/inertia.tsx` (wraps `<App>` in `RiffrecProvider`)
-- `.env.example` (`RIFFREC_API_KEY` / `RIFFREC_ENDPOINT` placeholder names)
+- `.env.example` (`RIFFREC_PUBLIC_KEY` / `RIFFREC_ENDPOINT` placeholder names)
 - `test/controllers/riffrec_share_test.rb`
 
 ## Adopt into an existing app
@@ -51,7 +51,7 @@ by `test/controllers/riffrec_share_test.rb`.
    the base Inertia controller.
 2. Copy `RiffrecProvider` and wrap `<App>` with it in the Vite entrypoint's `setup`.
 3. Add the `RIFFREC_*` names to `.env.example`.
-4. To go live: set `RIFFREC_API_KEY` + `RIFFREC_ENDPOINT` in the environment and
+4. To go live: set `RIFFREC_PUBLIC_KEY` + `RIFFREC_ENDPOINT` in the environment and
    apply the drop-in edit above.
 
 ## Verify adoption

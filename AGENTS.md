@@ -46,8 +46,9 @@ config. Secrets resolve at deploy time via shell indirection — none are commit
 
 ## Documented knowledge
 
-- **[docs/modules/](docs/modules/)** — one doc per adoptable module (auth, jobs,
-  testing, ci, deploy, ruby_llm, riffrec, serialization, agent-conventions), each
+- **[docs/modules/](docs/modules/)** — one doc per adoptable module (frontend,
+  auth, jobs, testing, ci, deploy, ruby_llm, serialization, riffrec,
+  ruby_native, agent-conventions), each
   with its file boundary and an "Adopt into an existing app" section.
 - **[docs/solutions/](docs/solutions/)** — durable, dated write-ups of solved
   problems (YAML frontmatter; see the README there).

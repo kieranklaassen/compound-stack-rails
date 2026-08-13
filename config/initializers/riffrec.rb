@@ -11,7 +11,7 @@ module Riffrec
 
   # Capture is enabled only when both are set. Unset (test/CI/default) → no-op.
   def configured?
-    ENV["RIFFREC_API_KEY"].present? && ENV["RIFFREC_ENDPOINT"].present?
+    ENV["RIFFREC_PUBLIC_KEY"].present? && ENV["RIFFREC_ENDPOINT"].present?
   end
 
   # The browser-safe config handed to the capture widget: the endpoint and the
@@ -22,7 +22,7 @@ module Riffrec
 
     {
       endpoint: ENV["RIFFREC_ENDPOINT"],
-      public_key: ENV["RIFFREC_API_KEY"]
+      public_key: ENV["RIFFREC_PUBLIC_KEY"]
     }
   end
 end
