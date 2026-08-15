@@ -5,6 +5,12 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.3.0
+
+- **0.3.0-001** · _feat_ · copse — [Add copse dev-environment module](docs/changelog/0.3.0-001-add-copse-module.md).
+  Deterministic per-app/per-worktree dev hostnames, ports, and databases; copse
+  launcher as bin/dev with web first in Procfile.dev.
+
 ## 0.2.3
 
 - **0.2.3-001** · _fix_ · deploy, frontend — [Deploy hardening from the first tenant](docs/changelog/0.2.3-001-deploy-hardening-from-first-tenant.md).

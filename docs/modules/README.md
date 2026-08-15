@@ -21,6 +21,7 @@ or registered-but-undocumented.
 | [riffrec](riffrec.md) | Feedback capture, no-op & secret-free | U10 |
 | [agent-conventions](agent-conventions.md) | AGENTS.md + docs conventions | U11 |
 | [ruby_native](ruby_native.md) | Native iOS/Android via rubynative.com, doc-first | — |
+| [copse](copse.md) | Per-app/worktree dev hostnames, ports, DBs | — |
 
 ## Module-doc template
 

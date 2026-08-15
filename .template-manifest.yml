@@ -8,7 +8,7 @@
 # to the modules listed here, applies them in order, and bumps template_version.
 # See docs/changelog/README.md and docs/template-manifest.md.
 
-template_version: "0.2.3"
+template_version: "0.3.0"
 
 # module name -> the template_version at which this app adopted it.
 modules:
@@ -23,3 +23,4 @@ modules:
   riffrec: "0.1.0"
   agent-conventions: "0.1.0"
   ruby_native: "0.2.0"
+  copse: "0.3.0"

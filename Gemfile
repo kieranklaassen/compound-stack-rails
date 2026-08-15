@@ -61,6 +61,9 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Per-app/per-worktree dev hostnames, ports, and databases [https://github.com/kieranklaassen/copse]
+  gem "copse"
 end
 
 group :test do
