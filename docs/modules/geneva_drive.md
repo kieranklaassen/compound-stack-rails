@@ -27,7 +27,8 @@ primary database, a worker consumes `default` (or `*`), and
 - `config/initializers/geneva_drive.rb` — released retention, recovery, batch,
   and test enqueue defaults.
 - `db/migrate/*geneva_drive*.rb` — all six migrations emitted by the 0.5.0
-  installer; do not collapse or hand-copy them.
+  installer, with the nullable-hero migration temporarily removing and restoring
+  SQLite's inbound foreign key so the parent-table swap preserves step history.
 - `db/schema.rb` — `geneva_drive_workflows` and
   `geneva_drive_step_executions`, their indexes, and foreign key.
 - `config/recurring.yml` — 30-minute housekeeping.
@@ -35,6 +36,8 @@ primary database, a worker consumes `default` (or `*`), and
   queue database used by the Solid Queue integration proof.
 - `test/workflows/geneva_drive_smoke_test.rb` — workflow, queue, duplicate
   delivery, pause/resume, and lost-enqueue recovery coverage.
+- `test/migrations/geneva_drive_migration_test.rb` — populated SQLite migration
+  proof for retained step history and valid foreign keys.
 - `test/jobs/recurring_schedule_test.rb` — recurring-task inheritance.
 
 ## Adopt into an existing app
@@ -51,9 +54,13 @@ instructions below (or the 0.4.0 changelog entry), verify them, and only then ad
    initializer and all six migrations. In the initializer comment, use the real
    setting name `stuck_in_progress_threshold` if the generator still writes the
    older `stuck_executing_threshold` name.
-4. Review the migrations, back up populated databases, and run
-   `bin/rails db:migrate`. Confirm both Geneva Drive tables and their partial
-   unique indexes appear in `db/schema.rb`.
+4. Review the migrations and back up populated databases. In
+   `AllowNullHeroOnGenevaDriveWorkflows`, remove the inbound
+   `geneva_drive_step_executions.workflow_id` foreign key before the generated
+   SQLite parent-table swap and restore it afterward with `on_delete: :cascade`;
+   otherwise the drop deletes existing step history. Run `bin/rails db:migrate`,
+   then confirm both Geneva Drive tables and their partial unique indexes appear
+   in `db/schema.rb`.
 5. Merge this task into the shared recurring anchor for every environment:
 
    ```yaml
@@ -62,10 +69,32 @@ instructions below (or the 0.4.0 changelog entry), verify them, and only then ad
      schedule: "*/30 * * * *"
    ```
 
-6. Copy the focused workflow and recurring-schedule tests, adapting the test
-   hero to an existing application model. Copy this boundary doc into the app.
-7. Run the verification below, then register `geneva_drive: "0.4.0"` in the
-   manifest. Future module-filtered upgrades will now include Geneva Drive.
+6. Give test a separate queue database matching production while leaving Active
+   Job on its test adapter by default:
+
+   ```yaml
+   test:
+     primary:
+       <<: *default
+       database: storage/test.sqlite3
+     queue:
+       <<: *default
+       database: storage/test_queue.sqlite3
+       migrations_paths: db/queue_migrate
+   ```
+
+   Add this to `config/environments/test.rb`:
+
+   ```ruby
+   config.solid_queue.connects_to = { database: { writing: :queue } }
+   ```
+
+7. Copy the focused workflow, migration, and recurring-schedule tests, adapting
+   the test hero to an existing application model. Copy this boundary doc into
+   the app.
+8. Run the verification below, then register `geneva_drive: "0.4.0"` in the
+   manifest. Set `template_version` to at least `"0.4.0"`, but never lower a
+   newer value. Future module-filtered upgrades will now include Geneva Drive.
 
 ## Define the first workflow
 
@@ -151,10 +180,14 @@ upgrade:
 2. Run `bin/rails generate geneva_drive:install` again. The installer copies any
    migrations missing from the app.
 3. Review every new migration. Back up populated SQLite data before a generated
-   table rebuild; the released nullable-hero migration is intentionally
-   irreversible on SQLite.
+   table rebuild. If the installer rewrites the v0.5.0 nullable-hero migration,
+   reapply the local foreign-key removal/restoration around its SQLite swap
+   before migrating; the generated drop-and-rename branch deletes child step
+   history through its cascading foreign key.
 4. Reapply the local initializer-comment correction if upstream still emits the
-   old setting name, migrate, and run the verification below.
+   old setting name, migrate, compare workflow and step-execution row counts,
+   require `PRAGMA integrity_check` to return `ok`, require
+   `PRAGMA foreign_key_check` to return no rows, and run the verification below.
 5. Advance the module's manifest version only after the checks pass.
 
 ## License

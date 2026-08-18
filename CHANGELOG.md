@@ -9,7 +9,8 @@ filter+apply algorithm.
 
 - **0.4.0-001** · _feat_ · geneva_drive — [Add Geneva Drive workflow module](docs/changelog/0.4.0-001-add-geneva-drive-module.md).
   Released 0.5.0 engine, generated persistence, Solid Queue housekeeping,
-  runtime compatibility proof, and an independently adoptable module boundary.
+  SQLite history-preservation guard, runtime compatibility proof, and an
+  independently adoptable module boundary.
 
 ## 0.3.0
 

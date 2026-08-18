@@ -23,9 +23,15 @@ class AgentConventionsTest < ActiveSupport::TestCase
 
   test "AGENTS.md enumerates every manifest module" do
     agents = File.read(ROOT.join("AGENTS.md"))
+    enumeration = agents.match(
+      %r{one doc per adoptable module \((?<modules>.*?)\), each}m
+    )&.[](:modules)
+    assert enumeration, "AGENTS.md must contain the adoptable-module enumeration"
+
+    documented_modules = enumeration.split(",").map(&:strip)
 
     MANIFEST_MODULES.each do |module_name|
-      assert_includes agents, module_name,
+      assert_includes documented_modules, module_name,
         "AGENTS.md must enumerate manifest module #{module_name.inspect}"
     end
   end
