@@ -25,6 +25,17 @@ class RecurringScheduleTest < ActiveSupport::TestCase
       "the pruning method must exist on SolidQueue::Job"
   end
 
+  test "each environment runs Geneva Drive housekeeping every 30 minutes" do
+    RECURRING.each_value do |tasks|
+      housekeeping = tasks.fetch("geneva_drive_housekeeping")
+
+      assert_equal "GenevaDrive::HousekeepingJob", housekeeping.fetch("class")
+      assert_equal "*/30 * * * *", housekeeping.fetch("schedule")
+    end
+
+    assert_operator GenevaDrive::HousekeepingJob, :<, ActiveJob::Base
+  end
+
   test "JOB_CONCURRENCY defaults processes to 1 when unset" do
     worker = QUEUE.fetch("production").fetch("workers").first
     assert_equal 1, worker.fetch("processes")
