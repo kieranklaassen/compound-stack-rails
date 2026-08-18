@@ -22,6 +22,7 @@ or registered-but-undocumented.
 | [agent-conventions](agent-conventions.md) | AGENTS.md + docs conventions | U11 |
 | [ruby_native](ruby_native.md) | Native iOS/Android via rubynative.com, doc-first | — |
 | [copse](copse.md) | Per-app/worktree dev hostnames, ports, DBs | — |
+| [geneva_drive](geneva_drive.md) | Durable, resumable Active Job workflows | — |
 
 ## Module-doc template
 
