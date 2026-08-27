@@ -5,6 +5,13 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.4.0
+
+- **0.4.0-001** · _feat_ · geneva_drive — [Add Geneva Drive workflow module](docs/changelog/0.4.0-001-add-geneva-drive-module.md).
+  Released 0.5.0 engine, generated persistence, Solid Queue housekeeping,
+  SQLite history-preservation guard, runtime compatibility proof, and an
+  independently adoptable module boundary.
+
 ## 0.3.0
 
 - **0.3.0-001** · _feat_ · copse — [Add copse dev-environment module](docs/changelog/0.3.0-001-add-copse-module.md).
