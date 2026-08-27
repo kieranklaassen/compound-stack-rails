@@ -14,12 +14,15 @@ look for, and client-side registration — all driven by one config file.
   layout's `<title>` fallback, `application-name`, and `theme-color` metas all
   read it. Re-branding an app is a one-file edit.
 - **A deliberately minimal service worker.** It precaches only
-  `public/offline.html` and `public/icon.png`, intercepts only full-page
-  navigations (`request.mode === "navigate"`), and falls back to the offline
-  page **only when `fetch` rejects** (network error, server down). Every HTTP
-  response — including 4xx/5xx — is returned unmodified, and Inertia XHR visits
-  and Vite assets are never touched. No dynamic caching: Inertia's page-version
-  checks and XHR round trip do not survive a caching layer.
+  `public/offline.html` and `public/icon.png` (the icon is served cache-first so
+  the offline page renders it while the network is down), intercepts only
+  full-page navigations (`request.mode === "navigate"`), and falls back to the
+  offline page **only when `fetch` rejects** (network error, server down). Every
+  HTTP response — including 4xx/5xx — is returned unmodified, and Inertia XHR
+  visits and Vite assets are never touched. No dynamic caching: Inertia's
+  page-version checks and XHR round trip do not survive a caching layer. Its
+  caches are namespaced `pwa-*`; activation prunes only stale keys under that
+  prefix and leaves any other CacheStorage user on the origin alone.
 - **Registration** from `app/frontend/lib/pwa.ts`, called by the
   `application.ts` entrypoint after `load`. SSR-safe, no-op without browser
   support, never throws, once per page lifecycle.
@@ -29,8 +32,9 @@ look for, and client-side registration — all driven by one config file.
 - `config/initializers/pwa.rb` — the identity config
 - `app/views/pwa/manifest.json.erb`, `app/views/pwa/service-worker.js`
 - `public/offline.html`, `public/icon.png`, `public/icon.svg`
-- `config/routes.rb` — the two `rails/pwa#…` routes (service-worker route pins
-  `defaults: { format: :js }`)
+- `config/routes.rb` — the two `rails/pwa#…` routes (formats pinned: manifest
+  `format: true, constraints: { format: "json" }`; service-worker
+  `defaults: { format: :js }, constraints: { format: "js" }`)
 - `app/views/layouts/application.html.erb` — manifest link, `theme-color`,
   `application-name`, `<title>` fallback reading `config.x.pwa`
 - `app/frontend/lib/pwa.ts`, `app/frontend/lib/pwa.test.ts`,
@@ -47,8 +51,8 @@ Depends on the **frontend** module (layout + Vite entrypoint).
    (overwrite the Rails-generated comment-only versions) and `public/offline.html`.
    Supply a 512×512 `public/icon.png` (see the icon note below).
 3. In `config/routes.rb`, add (or uncomment and amend) the two routes:
-   `get "manifest" => "rails/pwa#manifest", as: :pwa_manifest` and
-   `get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker, defaults: { format: :js }`.
+   `get "manifest" => "rails/pwa#manifest", as: :pwa_manifest, format: true, constraints: { format: "json" }` and
+   `get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker, defaults: { format: :js }, constraints: { format: "js" }`.
 4. In the layout, read `Rails.application.config.x.pwa` for the `<title>`
    fallback and `application-name`, add `<meta name="theme-color">`, and emit
    `tag.link rel: "manifest", href: pwa_manifest_path(format: :json)`.
@@ -71,9 +75,10 @@ Depends on the **frontend** module (layout + Vite entrypoint).
 
 - **The worker is sticky.** Once registered it persists across deploys. It calls
   `skipWaiting()`/`clients.claim()` so updates take over promptly, but the cache
-  is keyed by `CACHE_VERSION` — bump it whenever `offline.html` or the precache
-  list changes. To reset locally: DevTools → Application → Service Workers →
-  Unregister, then Clear storage.
+  is keyed by `CACHE_VERSION` — bump it whenever `offline.html`, `icon.png`, or
+  the precache list changes (the icon is served cache-first from the worker).
+  To reset locally: DevTools → Application → Service Workers → Unregister, then
+  Clear storage.
 - **Precache uses `cache: "reload"` on purpose.** `public/` ships with a 1-year
   `cache-control` in production (2 days in development). Without the bypass, a
   new `CACHE_VERSION` would be refilled from the stale browser HTTP cache.
@@ -86,8 +91,10 @@ Depends on the **frontend** module (layout + Vite entrypoint).
   Local installability checks are Chromium/Firefox.
 - **Route format pin.** Rails collapses browser-like `Accept` headers (including
   the integration-test default) to `[:html]`; without `defaults: { format: :js }`
-  the extension-less `/service-worker` raises `MissingTemplate`. `/manifest.json`
-  is the canonical manifest URL — bare `/manifest` is unsupported.
+  the extension-less `/service-worker` raises `MissingTemplate`. The
+  `constraints` make mismatched URLs 404 at routing rather than 500 in the view
+  layer: `/manifest.json` is the only manifest URL — bare `/manifest` and
+  `/service-worker.json` are 404.
 - **Icons.** The manifest reuses `public/icon.png` for both `purpose: any` and
   `purpose: maskable`. A maskable icon needs safe-zone padding (keep the artwork
   within the central ~80%); the template icon is unpadded and may be cropped on

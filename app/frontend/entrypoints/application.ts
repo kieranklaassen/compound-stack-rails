@@ -6,10 +6,8 @@ import { registerServiceWorker } from '~/lib/pwa'
 
 // PWA: register the Inertia-safe service worker once the page has loaded so it
 // never competes with first render. See docs/modules/pwa.md.
-if (typeof window !== 'undefined') {
-  if (document.readyState === 'complete') {
-    void registerServiceWorker()
-  } else {
-    window.addEventListener('load', () => void registerServiceWorker(), { once: true })
-  }
+if (document.readyState === 'complete') {
+  void registerServiceWorker()
+} else {
+  window.addEventListener('load', () => void registerServiceWorker(), { once: true })
 }

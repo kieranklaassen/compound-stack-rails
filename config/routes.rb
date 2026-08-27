@@ -12,11 +12,14 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # PWA surface (docs/modules/pwa.md): Rails' built-in controller renders
-  # app/views/pwa/*, public and outside the Inertia auth gate. The service-worker
-  # route pins its format — Rails collapses browser-like Accept headers to html,
-  # which would otherwise raise MissingTemplate for the extension-less URL.
-  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker, defaults: { format: :js }
+  # app/views/pwa/*, public and outside the Inertia auth gate. Formats are pinned
+  # so a mismatched request 404s at routing instead of raising MissingTemplate
+  # (500) in the view layer: /manifest.json is the only manifest URL, and the
+  # extension-less /service-worker defaults to js because Rails collapses
+  # browser-like Accept headers to html.
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest, format: true, constraints: { format: "json" }
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker,
+    defaults: { format: :js }, constraints: { format: "js" }
 
   # Defines the root path route ("/")
   root "home#index"

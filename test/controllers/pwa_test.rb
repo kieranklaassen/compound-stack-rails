@@ -54,6 +54,13 @@ class PwaTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'cache: "reload"'
   end
 
+  test "mismatched formats 404 at routing instead of raising MissingTemplate" do
+    %w[/manifest /manifest.xml /service-worker.json].each do |path|
+      get path
+      assert_response :not_found, "#{path} should 404 at routing, not 500 in the view layer"
+    end
+  end
+
   test "the layout links the manifest and matches theme-color to config" do
     get root_path
 
