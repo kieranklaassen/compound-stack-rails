@@ -1,4 +1,57 @@
-// Add a service worker for processing Web Push notifications:
+// Minimal, Inertia-safe service worker.
+//
+// It exists to make the app installable and to show a friendly page when the
+// server cannot be reached. It deliberately caches NOTHING dynamic: Inertia
+// pages depend on the X-Inertia XHR round trip and asset-version checks, and
+// caching those produces stale pages and version-mismatch reloads.
+//
+// Bump CACHE_VERSION whenever offline.html or the precache list changes.
+const CACHE_VERSION = "v1"
+const CACHE_NAME = `pwa-${CACHE_VERSION}`
+const OFFLINE_URL = "/offline.html"
+
+// public/ ships with a 1-year cache-control in production, so precache requests
+// bypass the browser HTTP cache — otherwise a new CACHE_VERSION would be
+// refilled from the stale copy.
+const PRECACHE = [OFFLINE_URL, "/icon.png"].map(
+  (url) => new Request(url, { cache: "reload" })
+)
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting())
+  )
+})
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+      )
+      .then(() => self.clients.claim())
+  )
+})
+
+self.addEventListener("fetch", (event) => {
+  // Only full-page navigations are handled. Inertia XHR visits, Vite assets,
+  // and any other request pass straight through untouched.
+  if (event.request.mode !== "navigate") return
+
+  event.respondWith(
+    // Any HTTP response — including 4xx/5xx and redirects — is returned as-is.
+    // The offline page appears only when fetch itself rejects (network error,
+    // server down).
+    fetch(event.request).catch(() => caches.match(OFFLINE_URL))
+  )
+})
+
+// Web Push is a deferred extension of this module. When adopting it, handle
+// "push" and "notificationclick" here:
 //
 // self.addEventListener("push", async (event) => {
 //   const { title, options } = await event.data.json()
