@@ -5,6 +5,13 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.5.1
+
+- **0.5.1-001** · _fix_ · frontend — [Inertia asset-version chdir race](docs/changelog/0.5.1-001-inertia-version-chdir-race.md).
+  `ViteRuby.digest` runs inside a process-wide `Dir.chdir` block, so concurrent
+  Inertia requests raised "conflicting chdir during another chdir block" and 500'd.
+  Mutex-guarded, and memoized outside development/test.
+
 ## 0.5.0
 
 - **0.5.0-001** · _feat_ · pwa — [Add PWA module](docs/changelog/0.5.0-001-add-pwa-module.md).
