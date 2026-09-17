@@ -23,6 +23,7 @@ or registered-but-undocumented.
 | [ruby_native](ruby_native.md) | Native iOS/Android via rubynative.com, doc-first | — |
 | [copse](copse.md) | Per-app/worktree dev hostnames, ports, DBs | — |
 | [geneva_drive](geneva_drive.md) | Durable, resumable Active Job workflows | — |
+| [pwa](pwa.md) | Installable PWA: manifest, Inertia-safe service worker, offline page | — |
 
 ## Module-doc template
 

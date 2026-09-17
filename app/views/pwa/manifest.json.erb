@@ -1,10 +1,16 @@
+<%# Web app manifest. Identity comes from config/initializers/pwa.rb — edit there. %>
+<% pwa = Rails.application.config.x.pwa %>
 {
-  "name": "CompoundStackRails",
+  "id": "/",
+  "name": <%== pwa.name.to_json %>,
+  "short_name": <%== pwa.short_name.to_json %>,
+  "description": <%== pwa.description.to_json %>,
   "icons": [
     {
       "src": "/icon.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     },
     {
       "src": "/icon.png",
@@ -16,7 +22,6 @@
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
-  "description": "CompoundStackRails.",
-  "theme_color": "red",
-  "background_color": "red"
+  "theme_color": <%== pwa.theme_color.to_json %>,
+  "background_color": <%== pwa.background_color.to_json %>
 }

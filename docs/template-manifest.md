@@ -41,8 +41,10 @@ existing app") means adding its key at the current `template_version`.
 
 The template's app module is `CompoundStackRails` (from the repo name). A new app
 renames it — update `config/application.rb`, `config/database.yml` database names,
-`config/cable.yml`, and the Kamal `KAMAL_SERVICE`/`KAMAL_IMAGE` env values. The
-manifest/changelog machinery is name-agnostic and needs no change.
+`config/cable.yml`, the Kamal `KAMAL_SERVICE`/`KAMAL_IMAGE` env values, and
+`config/initializers/pwa.rb` (the user-facing app name, short name, description,
+and colours that feed the web app manifest, `<title>`, and `application-name`).
+The manifest/changelog machinery is name-agnostic and needs no change.
 
 ## Upgrade flow
 

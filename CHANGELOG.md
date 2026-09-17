@@ -5,6 +5,13 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.5.0
+
+- **0.5.0-001** · _feat_ · pwa — [Add PWA module](docs/changelog/0.5.0-001-add-pwa-module.md).
+  Installable out of the box via Rails' built-in PwaController: config-driven
+  manifest and layout identity, Inertia-safe service worker (navigate-only,
+  rejection-only offline fallback), static offline page, client registration.
+
 ## 0.4.0
 
 - **0.4.0-001** · _feat_ · geneva_drive — [Add Geneva Drive workflow module](docs/changelog/0.4.0-001-add-geneva-drive-module.md).
