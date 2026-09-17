@@ -85,6 +85,9 @@ class InertiaVersionThreadSafetyTest < ActiveSupport::TestCase
     end
   end
 
+  # Note: this is the only test that takes the non-local branch, and doing so
+  # leaves the initializer's memo populated for the rest of the process. A second
+  # test on that branch would need to account for it.
   test "outside development and test the digest is computed once, not per request" do
     with_counted_digest("b" * 40) do |calls|
       with_env_local(false) do
@@ -102,6 +105,7 @@ class InertiaVersionThreadSafetyTest < ActiveSupport::TestCase
   # block, signalling once it is there. Everything still runs through Ruby's real
   # Dir.chdir; only the dwell time is manufactured.
   def with_slow_within_root(signal, hold_for:)
+    patched = false
     config = ViteRuby.config
     original = config.method(:within_root)
     held = false
@@ -117,10 +121,13 @@ class InertiaVersionThreadSafetyTest < ActiveSupport::TestCase
         block.call
       end
     end
+    patched = true
 
     yield
   ensure
-    config.singleton_class.send(:remove_method, :within_root)
+    # Only undo what was actually installed — an unguarded remove_method would
+    # raise NameError over the top of whatever really failed.
+    config.singleton_class.send(:remove_method, :within_root) if patched
   end
 
   # Counts calls to ViteRuby.digest and hands the counter to the block. Minitest 6
@@ -128,28 +135,34 @@ class InertiaVersionThreadSafetyTest < ActiveSupport::TestCase
   # method is swapped by alias and the original delegator restored afterwards —
   # define/remove alone would delete the def_delegators entry for good.
   def with_counted_digest(value)
+    aliased = false
     singleton = ViteRuby.singleton_class
     calls = 0
 
     singleton.send(:alias_method, :digest_before_stub, :digest)
+    aliased = true
     singleton.send(:define_method, :digest) { calls += 1; value }
 
     yield -> { calls }
   ensure
-    singleton.send(:alias_method, :digest, :digest_before_stub)
-    singleton.send(:remove_method, :digest_before_stub)
+    if aliased
+      singleton.send(:alias_method, :digest, :digest_before_stub)
+      singleton.send(:remove_method, :digest_before_stub)
+    end
   end
 
   # Flips Rails.env.local? for the block. Rails.env is memoized, and local? is
   # defined on ActiveSupport::EnvironmentInquirer, so a singleton override removes
   # cleanly and reveals the real method again.
   def with_env_local(value)
+    stubbed = false
     env = Rails.env
     env.define_singleton_method(:local?) { value }
+    stubbed = true
 
     yield
   ensure
-    env.singleton_class.send(:remove_method, :local?)
+    env.singleton_class.send(:remove_method, :local?) if stubbed
   end
 
   # vite_ruby memoizes the digest for one second; a warm memo returns before
