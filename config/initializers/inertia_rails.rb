@@ -3,7 +3,28 @@
 InertiaRails.configure do |config|
   # Lambda so the asset version is re-read on each request rather than frozen at
   # boot — a rebuilt frontend invalidates client history without a server restart.
-  config.version = -> { ViteRuby.digest }
+  #
+  # The lock is load-bearing. ViteRuby.digest computes inside
+  # ViteRuby::Config#within_root, which is `Dir.chdir(root) { ... }` — and
+  # block-form Dir.chdir is PROCESS-WIDE. A second thread entering while the first
+  # is inside raises "conflicting chdir during another chdir block", so under Puma
+  # two concurrent Inertia requests 500. vite_ruby's own 1-second memo narrows that
+  # window without closing it, and is itself read and written unsynchronized.
+  #
+  # development/test recompute on every call, so a rebuilt frontend still
+  # invalidates client history. Everywhere else the watched files cannot change for
+  # the life of the process (a rebuild ships a new container), so the first digest
+  # is memoized and no later request pays for the glob + SHA1 again.
+  vite_digest_lock = Mutex.new
+  vite_digest = nil
+
+  config.version = lambda do
+    vite_digest_lock.synchronize do
+      next ViteRuby.digest if Rails.env.local?
+
+      vite_digest ||= ViteRuby.digest
+    end
+  end
   config.encrypt_history = true
   config.always_include_errors_hash = true
   config.use_script_element_for_initial_page = true
