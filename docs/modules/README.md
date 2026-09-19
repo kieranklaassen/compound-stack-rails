@@ -24,6 +24,7 @@ or registered-but-undocumented.
 | [copse](copse.md) | Per-app/worktree dev hostnames, ports, DBs | — |
 | [geneva_drive](geneva_drive.md) | Durable, resumable Active Job workflows | — |
 | [pwa](pwa.md) | Installable PWA: manifest, Inertia-safe service worker, offline page | — |
+| [feature_flags](feature_flags.md) | Flipper feature flags: per-user actors, YAML registry, admin UI, doc-first | — |
 
 ## Module-doc template
 
