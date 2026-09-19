@@ -5,6 +5,14 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.6.0
+
+- **0.6.0-001** · _feat_ · feature_flags — [Add feature flags module](docs/changelog/0.6.0-001-add-feature-flags-module.md).
+  Registers Flipper as the house feature-flag choice, documentation-first:
+  per-user actors, a YAML registry that production creates disabled, an
+  admin-only dashboard, a client reader, the rollout ladder, the cleanup
+  migration, and test conventions, all as Cora runs them.
+
 ## 0.5.1
 
 - **0.5.1-001** · _fix_ · frontend — [Inertia asset-version chdir race](docs/changelog/0.5.1-001-inertia-version-chdir-race.md).

@@ -16,7 +16,8 @@ wired-off) · Rails 8 session auth (hardened, no open registration) · Solid Que
 in Puma · Minitest + Vitest · Kamal 2.12 (env-driven) · `ruby_llm` first-class ·
 [Geneva Drive](https://github.com/julik/geneva_drive) durable workflows (LGPLv3
 or separately commercially licensed) · installable PWA (manifest + Inertia-safe
-service worker) · riffrec feedback capture (no-op until configured).
+service worker) · riffrec feedback capture (no-op until configured) · Flipper
+feature flags (per-user actors, doc-first).
 
 ## Quickstart
 
@@ -37,9 +38,9 @@ EMAIL=you@example.com PASSWORD='a-long-password' bin/rails users:create
 
 Every stack area is an independently adoptable module with a boundary doc in
 [`docs/modules/`](docs/modules/README.md): frontend, auth, jobs, testing, ci,
-deploy, ruby_llm, serialization, riffrec, ruby_native, copse, geneva_drive, pwa, and
-agent-conventions. Each doc says what the module is, its exact file boundary,
-how to adopt it into an existing app, and how to verify.
+deploy, ruby_llm, serialization, riffrec, ruby_native, copse, geneva_drive, pwa,
+feature_flags, and agent-conventions. Each doc says what the module is, its
+exact file boundary, how to adopt it into an existing app, and how to verify.
 
 ## How upgrades flow
 
