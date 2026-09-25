@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_18_195630) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_013702) do
   create_table "geneva_drive_step_executions", force: :cascade do |t|
     t.datetime "canceled_at"
     t.datetime "completed_at"
@@ -30,8 +30,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_18_195630) do
     t.string "step_name", null: false
     t.datetime "updated_at", null: false
     t.integer "workflow_id", null: false
+    t.json "cursor"
+    t.bigint "continues_from_id"
+    t.index ["continues_from_id"], name: "index_geneva_drive_step_executions_on_continues_from_id"
     t.index ["finished_at"], name: "index_geneva_drive_step_executions_on_finished_at"
     t.index ["scheduled_for"], name: "index_geneva_drive_step_executions_on_scheduled_for"
+    t.index ["started_at"], name: "index_geneva_drive_step_executions_in_progress_started_at", where: "state = 'in_progress'"
     t.index ["state", "scheduled_for"], name: "index_geneva_drive_step_executions_scheduled"
     t.index ["state"], name: "index_geneva_drive_step_executions_on_state"
     t.index ["workflow_id", "created_at"], name: "idx_on_workflow_id_created_at_af16a14fb2"
@@ -52,6 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_18_195630) do
     t.datetime "transitioned_at"
     t.string "type", null: false
     t.datetime "updated_at", null: false
+    t.text "metadata"
     t.index ["hero_type", "hero_id"], name: "index_geneva_drive_workflows_on_hero_type_and_hero_id"
     t.index ["state"], name: "index_geneva_drive_workflows_on_state"
     t.index ["type", "hero_type", "hero_id"], name: "index_geneva_drive_workflows_unique_ongoing", unique: true, where: "state NOT IN ('finished', 'canceled') AND allow_multiple = 0"
