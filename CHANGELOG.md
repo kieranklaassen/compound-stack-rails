@@ -5,6 +5,15 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.8.0
+
+- **0.8.0-001** · _feat_ · webmcp — [Add WebMCP module](docs/changelog/0.8.0-001-add-webmcp-module.md).
+  One agent-tool registry (`app/tools/`, official `mcp` gem) serves an MCP
+  server and WebMCP browser tools. Signed-in pages register tools on the
+  browser's model context and unregister them on sign-out. Calls go through a
+  session + CSRF JSON endpoint. Includes a `bin/rails g tool` generator and a
+  stubbed-`modelContext` test harness.
+
 ## 0.7.0
 
 Dependency refresh so new clones and upgraded apps stop installing stale

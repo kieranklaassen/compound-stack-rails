@@ -2,6 +2,8 @@ import { createInertiaApp } from '@inertiajs/react'
 import { StrictMode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import RiffrecProvider, { type RiffrecConfig } from '../lib/riffrec_provider'
+import type { WebmcpManifest } from '../lib/webmcp'
+import WebmcpProvider from '../lib/webmcp_provider'
 
 void createInertiaApp({
   // Resolve page components from app/frontend/pages using the snake_case
@@ -30,6 +32,7 @@ void createInertiaApp({
     const shared = props.initialPage.props as {
       feedback_capture_enabled?: boolean
       riffrec?: RiffrecConfig | null
+      webmcp?: WebmcpManifest | null
     }
 
     const app = (
@@ -38,7 +41,9 @@ void createInertiaApp({
           enabled={Boolean(shared.feedback_capture_enabled)}
           config={shared.riffrec ?? null}
         >
-          <App {...props} />
+          <WebmcpProvider initialManifest={shared.webmcp ?? null}>
+            <App {...props} />
+          </WebmcpProvider>
         </RiffrecProvider>
       </StrictMode>
     )
