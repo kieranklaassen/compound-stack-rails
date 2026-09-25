@@ -37,6 +37,23 @@ EMAIL=you@example.com PASSWORD='a-long-password' bin/rails users:create
 Every Inertia page is authenticated by default (the gate lives on
 `InertiaController`); make a page public with `allow_unauthenticated_access`.
 
+## Agent tools (WebMCP + MCP)
+
+App capabilities an agent may call live in `app/tools/`, **one registry for both
+surfaces** (see [docs/modules/webmcp.md](docs/modules/webmcp.md)):
+
+- Add a tool with `bin/rails g tool Name`. It subclasses `ApplicationTool`
+  (an `MCP::Tool`) and is listed in `ToolRegistry::TOOLS`. Never define tool
+  schemas or descriptions anywhere else, including the frontend.
+- Tools run as the signed-in `user`: scope every query to it, keep
+  `additionalProperties: false`, and set `read_only_hint: true` only when the
+  tool never writes.
+- Signed-in pages get the manifest as the `webmcp` shared prop, and
+  `WebmcpProvider` registers it on the browser's model context. The
+  browser calls `POST /webmcp/tools/:name` (session + CSRF). That endpoint is
+  the one sanctioned exception to "no parallel JSON API"; do not add others for tools.
+- MCP clients get the same tools from `ToolRegistry.mcp_server(user:)`.
+
 ## Deploying
 
 Kamal 2.12+, fully env-driven. See **[DEPLOYING.md](DEPLOYING.md)** for the
@@ -48,7 +65,7 @@ config. Secrets resolve at deploy time via shell indirection — none are commit
 
 - **[docs/modules/](docs/modules/)** — one doc per adoptable module (frontend,
   auth, jobs, testing, ci, deploy, ruby_llm, serialization, riffrec,
-  ruby_native, copse, geneva_drive, pwa, feature_flags, agent-conventions), each
+  ruby_native, copse, geneva_drive, pwa, feature_flags, webmcp, agent-conventions), each
   with its file boundary and an "Adopt into an existing app" section.
 - **[docs/solutions/](docs/solutions/)** — durable, dated write-ups of solved
   problems (YAML frontmatter; see the README there).
