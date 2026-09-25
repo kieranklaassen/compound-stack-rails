@@ -46,6 +46,10 @@ gem "ruby_llm", "~> 2.0"
 # Durable, resumable workflows backed by Active Record
 gem "geneva_drive", "~> 0.6.0"
 
+# Official Ruby MCP SDK: app/tools/ subclass MCP::Tool, and ToolRegistry serves
+# them to MCP clients and to WebMCP browser agents (docs/modules/webmcp.md)
+gem "mcp", "~> 1.6"
+
 # Vite integration for the app/frontend build pipeline
 gem "vite_rails"
 
