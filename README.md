@@ -60,3 +60,7 @@ exact file boundary, how to adopt it into an existing app, and how to verify.
 Read [`AGENTS.md`](AGENTS.md) first (`CLAUDE.md` symlinks to it). Key rules:
 Rails owns routes and props (no parallel JSON API); never commit or push to
 `main`; deploy is fully env-driven with no committed secrets.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
