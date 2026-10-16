@@ -3,9 +3,9 @@
 require "test_helper"
 
 class RubyLlmInitializerTest < ActiveSupport::TestCase
-  # The 2.2 line is unreleased: RubyGems tops out at 2.1.1 and the gem's own
-  # version.rb still reads 2.1.1 on main, so only the git revision identifies
-  # this pin. Bumping the ref is a deliberate act that updates this constant.
+  # `RubyLLM::VERSION` at this revision reads 2.1.1, the last released
+  # version, so only the revision identifies the pin. Bumping the ref is a
+  # deliberate act that updates this constant.
   RUBY_LLM_REF = "1feba97feb8ab28655a0128c2885721c05294b84"
 
   test "Gemfile.lock resolves ruby_llm from the reviewed git revision" do
