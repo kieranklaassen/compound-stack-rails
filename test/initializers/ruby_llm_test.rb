@@ -31,7 +31,32 @@ class RubyLlmInitializerTest < ActiveSupport::TestCase
     assert_equal 60, RubyLLM.config.request_timeout
   end
 
-  test "the chat.ruby_llm subscriber logs each token bucket the gem reports" do
+  # The gem's own payload shape (Chat#generate_once): `:tokens` is seeded with
+  # an empty Tokens before the call and `:response_tokens` is written into the
+  # payload while the block runs, so the subscriber's preference for
+  # `:response_tokens` is what gets the counts logged at all. Reading `:tokens`
+  # here would log `tokens=unknown`.
+  test "the chat.ruby_llm subscriber logs the buckets the gem fills in during the call" do
+    io = StringIO.new
+    original = Rails.logger
+    Rails.logger = ActiveSupport::Logger.new(io)
+
+    ActiveSupport::Notifications.instrument("chat.ruby_llm", model: "test-model", tokens: RubyLLM::Tokens.new) do |payload|
+      payload[:response_tokens] = RubyLLM::Tokens.new(input: 14, output: 5, cache_read: 2)
+    end
+
+    assert_match(/\[ruby_llm\] chat model=test-model/, io.string)
+    assert_match(/input_tokens=14/, io.string)
+    assert_match(/output_tokens=5/, io.string)
+    assert_match(/cache_read_tokens=2/, io.string)
+    assert_no_match(/tokens=unknown/, io.string)
+  ensure
+    Rails.logger = original
+  end
+
+  # The fallback alone: a payload that carries counts under `:tokens` and
+  # nothing under `:response_tokens`.
+  test "the chat.ruby_llm subscriber falls back to the buckets under :tokens" do
     io = StringIO.new
     original = Rails.logger
     Rails.logger = ActiveSupport::Logger.new(io)

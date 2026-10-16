@@ -5,6 +5,17 @@ Human-readable index of the agent-executable entries under
 instructions an agent applies to a downstream app — see the README there for the
 filter+apply algorithm.
 
+## 0.9.0
+
+- **0.9.0-001** · _feat_ · ruby_llm — [ruby_llm 2.2 line, pinned by git ref](docs/changelog/0.9.0-001-ruby-llm-2-2.md).
+  `gem "ruby_llm"` moves from `~> 2.0` to `github: "crmne/ruby_llm"` at
+  revision `1feba97feb8ab28655a0128c2885721c05294b84`; the 2.2 line is
+  unreleased and `RubyLLM::VERSION` still reads 2.1.1 there, so the revision is
+  the pin's only name. Fixes the `chat.ruby_llm` subscriber, which logged a
+  `RubyLLM::Tokens` object address instead of counts, to log `bucket=count`
+  pairs. Replaces any `RubyLLM::VERSION` assertion with one on the revision in
+  `Gemfile.lock`.
+
 ## 0.8.1
 
 - **0.8.1-001** · _fix_ · deploy — [Drop the SQLite file precompile leaves in the image](docs/changelog/0.8.1-001-drop-precompile-sqlite.md).
