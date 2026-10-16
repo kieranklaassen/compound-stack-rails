@@ -24,8 +24,12 @@ end
 ActiveSupport::Notifications.subscribe("chat.ruby_llm") do |*args|
   event = ActiveSupport::Notifications::Event.new(*args)
   payload = event.payload
-  tokens = payload[:total_tokens] || payload[:tokens]
+  # The gem seeds the payload with an empty Tokens and fills :response_tokens
+  # once the completion returns, so prefer the latter. Tokens#to_h is already
+  # compacted: a bucket the provider did not report is absent, not zero.
+  counts = (payload[:response_tokens] || payload[:tokens]).then { |t| t.respond_to?(:to_h) ? t.to_h : {} }
   Rails.logger.info(
-    "[ruby_llm] chat model=#{payload[:model]} duration=#{event.duration.round(1)}ms tokens=#{tokens}"
+    "[ruby_llm] chat model=#{payload[:model]} duration=#{event.duration.round(1)}ms " \
+    "tokens=#{counts.map { |bucket, count| "#{bucket}=#{count}" }.join(' ').presence || 'unknown'}"
   )
 end
